@@ -13,5 +13,8 @@ namespace BuildingCompany.Data
 
         [BsonIgnoreIfNull]
         public string type;
+
+        [BsonIgnoreIfNull]
+        public bool Approved = false;
     }
 }

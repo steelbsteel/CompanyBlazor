@@ -1,0 +1,40 @@
+﻿@page "/ProjectView"
+
+@using BuildingCompany
+@using BuildingCompany.Data
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using MongoDB.Driver
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject User US
+@inject MongoDb MongoDb
+
+<PageTitle>Project</PageTitle>
+
+@{
+    @if (MongoDb.currentUser?.Login == MongoDb.currentCustomer?.Login)
+    {
+        <div>
+            <form>
+                <p>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Название</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="MongoDb.currentProject.Name" asp-for="Input.Login" class="form-control" id="loginText" name="LoginInputText" readonly/>
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+                    </div>
+                </p>
+            </form>
+        </div>
+    }
+}
+
+@code{
+   
+}

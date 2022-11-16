@@ -166,6 +166,7 @@
                             </div>
                             <div class="col-8">
                                 <select id="types" class="form-control">
+                                <option selected> </option>
                                 @foreach (var Projector in MongoDb.GetProjectorsList())
                                 {
                                     <option>@(Projector.Designation)</option>
@@ -183,6 +184,7 @@
                             </div>
                             <div class="col-8">
                                 <select id="types" class="form-control">
+                                <option selected> </option>
                                     @foreach (var Developer in MongoDb.GetDevelopersList())
                                     {
                                         <option>@(Developer.Designation)</option>

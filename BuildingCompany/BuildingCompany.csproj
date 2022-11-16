@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Agno.BlazorInputFile" Version="0.4.0" />
+    <PackageReference Include="BlazorInputFile" Version="0.1.0-preview-00002" />
+    <PackageReference Include="DataJuggler.Blazor.FileUpload" Version="7.0.0" />
     <PackageReference Include="MongoDB.Bson" Version="2.18.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
     <PackageReference Include="MongoDB.Driver.Core" Version="2.18.0" />

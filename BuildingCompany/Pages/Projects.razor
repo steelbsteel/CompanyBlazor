@@ -10,44 +10,114 @@
 @inject User US
 @inject MongoDb MongoDb
 
-<PageTitle>Login</PageTitle>
+<PageTitle>Projects</PageTitle>
 
 @{
     @if (MongoDb.currentCustomer?.Type == "Газификация")
     {
-        foreach(Project Project in MongoDb.GetProjects())
+        <form @onsubmit="@ProjectOnClick">
+        @foreach(Project project in MongoDb.GetProjects())
         {
-            if (Project.type == "Газификация")
+            if (project.type == "Газификация")
             {
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-8">
-                            @(Project.Name)
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-8">
+                            <p>
+                                <a class="form-control"> Название: @(project.Name) Тип:@(project.type)</a>
+                            </p>
+                            </div>
                         </div>
                     </div>
-                </div>
             }
         }
+            <p>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Выбрать проект</label>
+                        </div>
+                        <div class="col-8">
+                            <select @bind="_name">
+                                @foreach (var project in MongoDb.GetProjects())
+                                {
+                                    <option>@(project.Name)</option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </p>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-4">
+                    </div>
+                    <div class="col-8">
+                        <button type="submit" class="btn btn-success form-control">Выбрать проект</button>
+                    </div>
+                </div>
+            </div>
+        </form>
     }
 
     @if (MongoDb.currentCustomer?.Type == "Водоснабжение")
     {
-        foreach (Project Project in MongoDb.GetProjects())
+        <form @onsubmit="@ProjectOnClick">
+        @foreach (Project project in MongoDb.GetProjects())
         {
-            if (Project.type == "Водоснабжение")
+            if (project.type == "Водоснабжение")
             {
+                
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-8">
+                                <p>
+                                    <a class="form-control"> Название: @(project.Name) Тип:@(project.type)</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+            }
+        }
+            <p>
                 <div class="form-group">
                     <div class="row">
+                        <div class="col-4">
+                            <label>Выбрать проект</label>
+                        </div>
                         <div class="col-8">
-                            @(Project.Name)
+                            <select @bind="_name">
+                            <option selected></option>
+                                @foreach (var project in MongoDb.GetProjects())
+                                {
+                                    <option>@(project.Name)</option>
+                                }
+                            </select>
                         </div>
                     </div>
                 </div>
-            }
-        }
+            </p>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-4">
+                    </div>
+                    <div class="col-8">
+                        <button type="submit" class="btn btn-success form-control">Выбрать проект</button>
+                    </div>
+                </div>
+            </div>
+        </form>
     }
 }
 
 @code{
-   
+    string? _name;
+
+    public void ProjectOnClick()
+    {
+        MongoDb.currentProject = MongoDb.SearchProject(_name);
+        NavigationManager.NavigateTo("/ProjectView");
+
+    }
 }

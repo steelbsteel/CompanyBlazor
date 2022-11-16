@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using BuildingCompany.Pages;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System.ComponentModel.Design;
 
@@ -10,6 +11,7 @@ namespace BuildingCompany.Data
         public Developer? currentDeveloper;
         public Projector? currentProjector;
         public Customer? currentCustomer;
+        public Project? currentProject;
 
         static MongoClient client = new MongoClient("mongodb://localhost");
         static IMongoDatabase database = client.GetDatabase("BuildingCompany");
@@ -21,6 +23,13 @@ namespace BuildingCompany.Data
             collection.InsertOne(project);
         }
 
+        public Project SearchProject(string name)
+        {
+            var client = new MongoClient("mongodb://localhost");
+            var database = client.GetDatabase("BuildingCompany");
+            var collection = database.GetCollection<Project>("ProjectsCollection");
+            return (collection.Find(x => x.Name == name).FirstOrDefault());
+        }
         public List<Project> GetProjects()
         {
             var client = new MongoClient("mongodb://localhost");
