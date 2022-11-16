@@ -1,0 +1,128 @@
+﻿@page "/"
+
+@using BuildingCompany
+@using BuildingCompany.Data
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using MongoDB.Driver
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject User US
+@inject MongoDb MongoDb
+
+<PageTitle>Login</PageTitle>
+
+@{
+    <div>
+        <div>   
+            <form @onsubmit="@Login">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Логин</label>
+                        </div>
+                        <div class="col-8">
+                            <input @bind-value="_login" asp-for="Input.Login" class="form-control" id="loginText" name="LoginInputText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Пароль</label>
+                        </div>
+                        <div class="col-8">
+                            <input @bind-value="_password" type="text" asp-for="Input.Password" class="form-control" id="passwordText"/>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-danger" id="passwordText"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                        </div>
+                        <div class="col-8">
+                            <button type="submit" class="btn btn-success form-control">Log in</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@code{
+    string _login;
+    string _password;
+
+    public bool CheckUserInfoCorrect(User user, string password)
+    {
+        if (user.Password == password)
+        {
+            return true;
+        }
+
+        else
+        {
+            return false;
+        }
+    }
+
+    public async Task Login()
+    {
+        if (_login != null)
+        {
+            var client = new MongoClient("mongodb://localhost");
+            var database = client.GetDatabase("BuildingCompany");
+            var collection = database.GetCollection<User>("UserCollection");
+            var user = collection.Find(x => x.Login == _login).FirstOrDefault();
+            bool dataCorrect = CheckUserInfoCorrect(user, _password);
+
+            if (dataCorrect)
+            {
+                switch(user.Role)
+                {
+                    case("Developer"):
+                        {
+                            MongoDb.currentDeveloper = database.GetCollection<Developer>("DeveloperCollection").Find(x => x.Login == _login).FirstOrDefault();
+                        }
+                        break;
+
+                    case ("Projector"):
+                        {
+                            MongoDb.currentProjector = database.GetCollection<Projector>("ProjectorCollection").Find(x => x.Login == _login).FirstOrDefault();
+                        }
+                        break;
+
+                    case ("Customer"):
+                        {
+                            MongoDb.currentCustomer = database.GetCollection<Customer>("CustomerCollection").Find(x => x.Login == _login).FirstOrDefault();
+                        }
+                        break;
+                }
+
+                MongoDb.currentUser = user;
+
+                await JS.InvokeVoidAsync("alert", "Вход был осущствлен!");
+                NavigationManager.NavigateTo("/PersonalArea");
+                return;
+            }
+
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Введите данные корректно!");
+                return;
+            }
+        }
+
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Заполните данные!");
+            return;
+        }
+    }
+}

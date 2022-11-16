@@ -1,0 +1,402 @@
+﻿@page "/PersonalArea"
+
+
+
+@using BuildingCompany
+@using BuildingCompany.Data
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using MongoDB.Bson
+@using MongoDB.Driver
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject User US
+@inject MongoDb MongoDb
+
+<PageTitle>PersonalArea</PageTitle>
+
+@{
+    @if (MongoDb.currentUser.Login == MongoDb.currentCustomer.Login)
+    {
+    <div>
+        <div>
+            <form @onsubmit="@SaveChangesCustomer">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Фамилия</label>
+                        </div>
+                        <div class="col-8">
+                            <input @bind-value="MongoDb.currentCustomer.Surname" asp-for="Input.Login" class="form-control" id="loginText"/>
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Имя</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentCustomer.Name" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Отчество</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentCustomer.Patronymic" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentUser.Email" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Телефон</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentUser.PhoneNumber" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Отдел</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentCustomer.Post" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Должность</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentCustomer.Department" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Тип</label>
+                            </div>
+                            <div class="col-8">
+                                    <select @bind="MongoDb.currentCustomer.Type" id="types" class="form-control">
+                                    <option selected> </option>
+                                    <option>Газификация</option>
+                                    <option>Водоснабжение</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                            </div>
+                            <div class="col-8">
+                                <button id="SaveChanges" type="submit" class="btn btn-success form-control" asp-page="/PersonalArea">Сохранить данные</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
+
+    @if (MongoDb.currentUser?.Login == MongoDb.currentDeveloper?.Login)
+    {
+    <div>
+        <div>
+            <form @onsubmit="@SaveChangesDeveloper">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Застройщик</label>
+                        </div>
+                        <div class="col-8">
+                            <input @bind-value="MongoDb.currentDeveloper.Designation"asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>ОГРН</label>
+                        </div>
+                        <div class="col-8">
+                            <input @bind-value="MongoDb.currentDeveloper.OGRN" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>ИНН</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentDeveloper.TIN" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>КПП</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentDeveloper.KPP" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Адрес</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentDeveloper.Address" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentDeveloper.Email" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Телефон</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentUser.PhoneNumber" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>ФИО Рук. Исп. комитета РТ</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentDeveloper.CommitteeFullName" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                            </div>
+                            <div class="col-8">
+                                <button id="SaveChanges" type="submit" class="btn btn-success form-control" asp-page="/PersonalArea">Сохранить данные</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
+
+    @if (MongoDb.currentUser?.Login == MongoDb.currentProjector?.Login)
+    {
+    <div>
+        <div>
+            <form @onsubmit="@SaveChangesProjector">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Наименование проектной организцаии</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentProjector.Designation" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>ОГРН</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentProjector.OGRN" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>ИНН</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentProjector.TIN" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>КПП</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentProjector.KPP" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Адрес</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentProjector.Address" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentUser.Email" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>Телефон</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentUser.PhoneNumber" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>ФИО Директора</label>
+                        </div>
+                        <div class="col-8">
+                                <input @bind-value="MongoDb.currentProjector.DirectorFullName" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label>ФИО Главный инженер проекта</label>
+                        </div>
+                        <div class="col-8">
+                            <input @bind-value="MongoDb.currentProjector.EngineerFullName" asp-for="Input.Login" class="form-control" id="loginText" />
+                        </div>
+                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                            </div>
+                            <div class="col-8">
+                                <button id="SaveChanges" type="submit" class="btn btn-success form-control" asp-page="/PersonalArea">Сохранить данные</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
+}
+
+@code{
+    string _nameCust;
+    string _surnameCust;
+    string _patronymicCust;
+    string _departmentCust;
+    string _postCust;
+    string _NSPDirectorCust;
+    string _typeCust;
+
+    string _designationDev;
+    string _OGRNDev; 
+    string _TINDev; 
+    string _KPPDev; 
+    string _addressDev;
+    string _CommitteeFullNameDev;
+
+    public string _designationPrj;
+    public string _OGRNPrj; 
+    public string _TINPrj; 
+    public string _KPPPrj; 
+    public string _addressPrj;
+    public string _directorFullNamePrj;
+    public string _engineerFullNamePrj;
+
+    public async Task SaveChangesCustomer()
+    {
+        var client = new MongoClient("mongodb://localhost");
+        var database = client.GetDatabase("BuildingCompany");
+        var collection = database.GetCollection<User>("UserCollection");
+        if (MongoDb.currentUser != null)
+        {
+            //var user = collection.Find(x => x.Login == MongoDb.currentUser.Login).FirstOrDefault;
+
+            await JS.InvokeVoidAsync("alert", "Данные обновлены!");
+            return;
+        }
+    }
+
+    public async Task SaveChangesDeveloper()
+    {
+        var client = new MongoClient("mongodb://localhost");
+        var database = client.GetDatabase("BuildingCompany");
+        var collection = database.GetCollection<User>("BuildingCompanyCollection");
+        if (US.currentUser != null)
+        {
+            var user = collection.Find(x => x.Login == US.currentUser.Login).FirstOrDefault();
+
+            await JS.InvokeVoidAsync("alert", "Данные обновлены!");
+            return;
+        }
+    }
+
+    public async Task SaveChangesProjector()
+    {
+        var client = new MongoClient("mongodb://localhost");
+        var database = client.GetDatabase("BuildingCompany");
+        var collection = database.GetCollection<User>("BuildingCompanyCollection");
+        if (US.currentUser != null)
+        {
+            var user = collection.Find(x => x.Login == US.currentUser.Login).FirstOrDefault();
+
+            await JS.InvokeVoidAsync("alert", "Данные обновлены!");
+            return;
+        }
+    }
+}

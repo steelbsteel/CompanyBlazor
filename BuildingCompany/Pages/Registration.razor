@@ -1,0 +1,462 @@
+﻿@page "/Registration"
+
+<PageTitle>Registration</PageTitle>
+
+@using BuildingCompany.Data
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using MongoDB.Bson
+@using MongoDB.Driver
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject MongoDb MongoDB
+
+
+@{
+    <h2>Registration</h2>
+    <div>
+                <div>
+                    <form @onsubmit = "@Register">    
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Логин</label>
+                                </div>
+                                <div class="col-8">
+                                <input @bind-value="@_login" asp-for="Input.Login" class="form-control" id="loginText" />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Email</label>
+                                </div>
+                                <div class="col-8">
+                                <input @bind-value="@_email" asp-for="Input.Email" class="form-control" id="emailText" />
+                                </div>
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Пароль</label>
+                                </div>
+                                <div class="col-8">
+                                    <input style="@(_password == _passwordCheck? "border-color:" : "border-color:red")" @bind-value="@_password" type="text" asp-for="Input.Password" class="form-control" id="passwordText" runat=server />
+                                </div>
+                                <span asp-validation-for="Input.Password" class="text-danger" id="passwordText"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Подтверждение пароля</label>
+                                </div>
+                                <div class="col-8">
+                                    <input style="@(_password == _passwordCheck? "border-color:" : "border-color:red")" @bind-value="@_passwordCheck" asp-for="Input.ConfirmPassword" class="form-control" />
+                                </div>
+
+                            </div>
+                        </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Номер телефона</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="@_phoneNumber" type="text" asp-for="Input.Password" class="form-control" id="passwordText" runat=server />
+                            </div>
+                            <span asp-validation-for="Input.Password" class="text-danger" id="passwordText"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Тип</label>
+                            </div>
+                            <div class="col-8">
+                                <select @bind="@_type" id="types" class="form-control">
+                                    <option selected> </option>
+                                    <option>Developer</option>
+                                    <option>Customer</option>
+                                    <option>Projector</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                @if (_type == "Customer")
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Фамилия</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_surnameCust" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Имя</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_nameCust" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Отчество</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_patronymicCust" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Отдел</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_postCust" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Должность</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_departmentCust" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Тип</label>
+                                </div>
+                                <div class="col-8">
+                                    <select @bind="_typeCust" id="types" class="form-control">
+                                        <option selected> </option>
+                                        <option>Газификация</option>
+                                        <option>Водоснабжение</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (_type == "Developer")
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Застройщик</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_designationDev" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>ОГРН</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_OGRNDev" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>ИНН</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_TINDev" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>КПП</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_KPPDev" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Адрес</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_addressDev" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>ФИО Рук. Исп. комитета РТ</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_CommitteeFullNameDev" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+                    </div>
+                }
+
+                @if (_type == "Projector")
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Наименование проектной организцаии</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_designationPrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>ОГРН</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_OGRNPrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>ИНН</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_TINPrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>КПП</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_KPPPrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Адрес</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_addressPrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>ФИО Директора</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_directorFullNamePrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label>ФИО Главный инженер проекта</label>
+                            </div>
+                            <div class="col-8">
+                                <input @bind-value="_engineerFullNamePrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                            </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
+                        </div>
+                    </div>
+                }
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                            </div>
+                            <div class="col-8">
+                            <button id="registerBtn" type="submit" class="btn btn-success form-control" asp-page="/PersonalArea">Register</button>
+                            </div>
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+}
+
+@code 
+{
+    User _user = new User();
+
+    public static string? _login;
+    public string? _password;
+    public string? _type;
+    public string? _phoneNumber;
+    public string? _email;
+    public string? _passwordCheck;
+
+    string _nameCust;
+    string _surnameCust;
+    string _patronymicCust;
+    string _departmentCust;
+    string _postCust;
+    string _NSPDirectorCust;
+    string _typeCust;
+
+    string _designationDev;
+    string _OGRNDev;
+    string _TINDev;
+    string _KPPDev;
+    string _addressDev;
+    string _CommitteeFullNameDev;
+
+    public string _designationPrj;
+    public string _OGRNPrj;
+    public string _TINPrj;
+    public string _KPPPrj;
+    public string _addressPrj;
+    public string _directorFullNamePrj;
+    public string _engineerFullNamePrj;
+
+    public static bool UserExistsCheck(string? login)
+    {
+        var client = new MongoClient("mongodb://localhost");
+        var database = client.GetDatabase("BuildingCompany");
+        var collection = database.GetCollection<User>("BuildingCompanyCollection");
+        List<User> collectionDocuments = collection.Find(new BsonDocument()).ToList();
+
+        foreach (var user in collectionDocuments)
+        {
+            if (login == user.Login)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public async Task Register()
+    {
+        bool userExists = UserExistsCheck(_login);
+
+        if (userExists)
+        {
+            await JS.InvokeVoidAsync("alert", "Такой пользователь уже существует!");
+            return;
+        }
+
+        else
+        {
+            if (_login != null &&
+            _password != null &&
+            _type != null &&
+            _phoneNumber != null &&
+            _email != null &&
+            _passwordCheck != null &&
+            _type != null)
+            {
+                if (_password == _passwordCheck)
+                {
+                    _user.Email = _email;
+                    _user.Login = _login;
+                    _user.PhoneNumber = _phoneNumber;
+                    _user.Password = _password;
+                    _user.Role = _type;
+                    switch(_type)
+                    {
+                        case("Developer"): 
+                            {
+                                MongoDb.AddUserToDataBase(_user);
+                                Developer developer = new Developer(_user, 
+                                                                    _designationDev, 
+                                                                    _OGRNDev, 
+                                                                    _TINDev, 
+                                                                    _KPPDev, 
+                                                                    _addressDev, 
+                                                                    _CommitteeFullNameDev);
+                                MongoDb.AddDeveloperToDataBase(developer);
+                            }
+                            break;
+
+                        case ("Customer"):
+                            {
+                                MongoDb.AddUserToDataBase(_user);
+                                Customer customer = new Customer(_user, 
+                                                                _nameCust, 
+                                                                _surnameCust,
+                                                                _patronymicCust,
+                                                                _departmentCust, 
+                                                                _postCust, 
+                                                                _NSPDirectorCust,
+                                                                _typeCust);
+                                MongoDb.AddCustomerToDataBase(customer);
+                            }
+                            break;
+
+                        case ("Projector"):
+                            {
+                                MongoDb.AddUserToDataBase(_user);
+                                Projector projector = new Projector(_user,
+                                                                    _designationPrj,
+                                                                    _OGRNPrj,_TINPrj,
+                                                                    _KPPPrj,_addressPrj,
+                                                                    _directorFullNamePrj,
+                                                                    _engineerFullNamePrj);
+                                MongoDb.AddProjectorToDataBase(projector);
+                            }
+                            break;
+                    }
+
+                    await JS.InvokeVoidAsync("alert", "Регистрация была успешно выполнена!");
+                    NavigationManager.NavigateTo("/");
+                    return;
+                }
+
+                else
+                {
+                    await JS.InvokeVoidAsync("alert", "Пароли не совпадают!");
+                    return;
+                }
+            }
+
+            else 
+            {
+                await JS.InvokeVoidAsync("alert", "Заполните до конца данные!");
+                return;
+            }
+        }       
+    }
+}
+
