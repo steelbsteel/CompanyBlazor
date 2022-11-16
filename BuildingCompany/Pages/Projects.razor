@@ -1,0 +1,53 @@
+﻿@page "/Projects"
+
+@using BuildingCompany
+@using BuildingCompany.Data
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using MongoDB.Driver
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject User US
+@inject MongoDb MongoDb
+
+<PageTitle>Login</PageTitle>
+
+@{
+    @if (MongoDb.currentCustomer?.Type == "Газификация")
+    {
+        foreach(Project Project in MongoDb.GetProjects())
+        {
+            if (Project.type == "Газификация")
+            {
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-8">
+                            @(Project.Name)
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+
+    @if (MongoDb.currentCustomer?.Type == "Водоснабжение")
+    {
+        foreach (Project Project in MongoDb.GetProjects())
+        {
+            if (Project.type == "Водоснабжение")
+            {
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-8">
+                            @(Project.Name)
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+}
+
+@code{
+   
+}

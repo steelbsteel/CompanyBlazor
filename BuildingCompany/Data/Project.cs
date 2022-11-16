@@ -1,8 +1,17 @@
-﻿namespace BuildingCompany.Data
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace BuildingCompany.Data
 {
+    [BsonIgnoreExtraElements]
     public class Project
     {
-        public int id;
-        public List<Document> documents;
+        [BsonIgnoreIfNull]
+        public string Name;
+
+        [BsonIgnoreIfNull]
+        public List<Document> Documents;
+
+        [BsonIgnoreIfNull]
+        public string type;
     }
 }

@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System.ComponentModel.Design;
 
 namespace BuildingCompany.Data
@@ -12,6 +13,21 @@ namespace BuildingCompany.Data
 
         static MongoClient client = new MongoClient("mongodb://localhost");
         static IMongoDatabase database = client.GetDatabase("BuildingCompany");
+        public static void AddProjectToDataBase(Project project)
+        {
+            var client = new MongoClient("mongodb://localhost");
+            var database = client.GetDatabase("BuildingCompany");
+            var collection = database.GetCollection<Project>("ProjectsCollection");
+            collection.InsertOne(project);
+        }
+
+        public List<Project> GetProjects()
+        {
+            var client = new MongoClient("mongodb://localhost");
+            var database = client.GetDatabase("BuildingCompany");
+            var collection = database.GetCollection<Project>("ProjectsCollection");
+            return collection.Find(new BsonDocument()).ToList();
+        }
         public static void AddCustomerToDataBase(Customer customer)
         {
             var client = new MongoClient("mongodb://localhost");
@@ -68,6 +84,22 @@ namespace BuildingCompany.Data
             var filter = Builders<Projector>.Filter.Eq("Login", user.Login);
             var collection = database.GetCollection<Projector>("ProjectorCollection");
             collection.ReplaceOne(filter, user);
+        }
+
+        public List<Projector> GetProjectorsList()
+        {
+            var client = new MongoClient("mongodb://localhost");
+            var database = client.GetDatabase("BuildingCompany");
+            var collection = database.GetCollection<Projector>("ProjectorCollection");
+            return collection.Find(new BsonDocument()).ToList();
+        }
+
+        public List<Developer> GetDevelopersList()
+        {
+            var client = new MongoClient("mongodb://localhost");
+            var database = client.GetDatabase("BuildingCompany");
+            var collection = database.GetCollection<Developer>("DeveloperCollection");
+            return collection.Find(new BsonDocument()).ToList();
         }
     }
 }

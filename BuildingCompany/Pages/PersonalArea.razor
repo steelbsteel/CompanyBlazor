@@ -16,7 +16,7 @@
 <PageTitle>PersonalArea</PageTitle>
 
 @{
-    @if (MongoDb.currentUser.Login == MongoDb.currentCustomer.Login)
+    @if (MongoDb.currentCustomer != null &&  MongoDb.currentUser?.Login == MongoDb.currentCustomer?.Login)
     {
     <div>
         <div>
@@ -121,7 +121,7 @@
     </div>
     }
 
-    @if (MongoDb.currentUser?.Login == MongoDb.currentDeveloper?.Login)
+    @if (MongoDb.currentDeveloper != null && MongoDb.currentUser?.Login == MongoDb.currentDeveloper?.Login)
     {
     <div>
         <div>
@@ -222,7 +222,7 @@
     </div>
     }
 
-    @if (MongoDb.currentUser?.Login == MongoDb.currentProjector?.Login)
+    @if (MongoDb.currentProjector != null && MongoDb.currentUser?.Login == MongoDb.currentProjector?.Login)
     {
     <div>
         <div>
