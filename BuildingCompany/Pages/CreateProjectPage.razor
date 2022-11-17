@@ -1,0 +1,115 @@
+﻿@page "/CreateProject"
+
+@using BuildingCompany
+@using BuildingCompany.Data
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using MongoDB.Driver
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject User US
+@inject MongoDb MongoDb
+
+<PageTitle>Create a project</PageTitle>
+
+@{
+    @if(MongoDb.currentCustomer != null)
+    {
+        @if (MongoDb.currentCustomer.Login == MongoDb.currentUser.Login)
+        {
+            <div>
+                <div>
+                    <form @onsubmit="@CreateProject">
+                        <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Название</label>
+                                </div>
+                                <div class="col-8">
+                                    <input @bind-value="_name" asp-for="Input.Login" class="form-control" id="loginText" name="LoginInputText" />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                        </p> 
+                        <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Проектировщик</label>
+                                </div>
+                                <div class="col-8">
+                                    <select @bind="_projector"id="types" class="form-control">
+                                        <option selected></option>
+                                                @foreach (var Projector in MongoDb.GetProjectorsList())
+                                            {
+                                                    <option>@(Projector.Designation)</option>
+                                            }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        </p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Застройщик</label>
+                                </div>
+                                <div class="col-8">
+                                    <select @bind="_developer" id="types" class="form-control">
+                                        <option selected></option>
+                                            @foreach (var Developer in MongoDb.GetDevelopersList())
+                                        {
+                                                <option>@(Developer.Designation)</option>
+                                        }   
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                </div>
+                                <div class="col-8">
+                                    <button type="submit" class="btn btn-success form-control">Создать проект</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+}
+
+
+@code {
+    string? _name;
+    string? _developer;
+    string? _projector;
+
+
+    public async Task CreateProject()
+    {
+        if (_name != null && _developer != null && _projector != null)
+        {
+            Project project = new Project(MongoDb.currentCustomer);
+            project.Name = _name;
+            project.developer = MongoDb.SearchDevByName(_developer);
+            project.projector = MongoDb.SearchPrjByName(_projector);
+
+            MongoDb.AddProjectToDataBase(project);
+
+            await JS.InvokeVoidAsync("alert", "Проект был создан!");
+            return;
+        }
+
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Заполните данные!");
+            return;
+        }
+    }
+}

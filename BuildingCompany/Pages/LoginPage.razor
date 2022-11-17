@@ -61,11 +61,18 @@
 
     public bool CheckUserInfoCorrect(User user, string password)
     {
-        if (user.Password == password)
+        if (user != null)
         {
-            return true;
-        }
+            if (user.Password == password)
+            {
+                return true;
+            }
 
+            else
+            {
+                return false;
+            }
+        }
         else
         {
             return false;

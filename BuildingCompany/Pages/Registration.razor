@@ -181,7 +181,7 @@
                                 <label>ОГРН</label>
                             </div>
                             <div class="col-8">
-                                <input @bind-value="_OGRNDev" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input style="@(_OGRNDev?.Length == 13? "border-color:" : "border-color:red")" @bind-value="_OGRNDev" asp-for="Input.Login" class="form-control" id="loginText" />
                             </div>
                             <span asp-validation-for="Input.Login" class="text-danger"></span>
                         </div>
@@ -191,7 +191,7 @@
                                 <label>ИНН</label>
                             </div>
                             <div class="col-8">
-                                <input @bind-value="_TINDev" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input style="@(_TINDev?.Length == 12? "border-color:" : "border-color:red")" @bind-value="_TINDev" asp-for="Input.Login" class="form-control" id="loginText" />
                             </div>
                             <span asp-validation-for="Input.Login" class="text-danger"></span>
                         </div>
@@ -201,7 +201,7 @@
                                 <label>КПП</label>
                             </div>
                             <div class="col-8">
-                                <input @bind-value="_KPPDev" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input style="@(_KPPDev?.Length == 9? "border-color:" : "border-color:red")" @bind-value="_KPPDev" asp-for="Input.Login" class="form-control" id="loginText" />
                             </div>
                             <span asp-validation-for="Input.Login" class="text-danger"></span>
                         </div>
@@ -246,7 +246,7 @@
                                 <label>ОГРН</label>
                             </div>
                             <div class="col-8">
-                                <input @bind-value="_OGRNPrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input style="@(_OGRNPrj?.Length == 13? "border-color:" : "border-color:red")" @bind-value="_OGRNPrj" asp-for="Input.Login" class="form-control" id="loginText" />
                             </div>
                             <span asp-validation-for="Input.Login" class="text-danger"></span>
                         </div>
@@ -256,7 +256,7 @@
                                 <label>ИНН</label>
                             </div>
                             <div class="col-8">
-                                <input @bind-value="_TINPrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input style="@(_TINPrj?.Length == 12? "border-color:" : "border-color:red")"  @bind-value="_TINPrj" asp-for="Input.Login" class="form-control" id="loginText" />
                             </div>
                             <span asp-validation-for="Input.Login" class="text-danger"></span>
                         </div>
@@ -266,7 +266,7 @@
                                 <label>КПП</label>
                             </div>
                             <div class="col-8">
-                                <input @bind-value="_KPPPrj" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input style="@(_KPPPrj?.Length == 9? "border-color:" : "border-color:red")" @bind-value="_KPPPrj" asp-for="Input.Login" class="form-control" id="loginText" />
                             </div>
                             <span asp-validation-for="Input.Login" class="text-danger"></span>
                         </div>
@@ -327,28 +327,28 @@
     public string? _email;
     public string? _passwordCheck;
 
-    string _nameCust;
-    string _surnameCust;
-    string _patronymicCust;
-    string _departmentCust;
-    string _postCust;
-    string _NSPDirectorCust;
-    string _typeCust;
+    public string? _nameCust;
+    public string? _surnameCust;
+    public string? _patronymicCust;
+    public string? _departmentCust;
+    public string? _postCust;
+    public string? _NSPDirectorCust;
+    public string? _typeCust;
 
-    string _designationDev;
-    string _OGRNDev;
-    string _TINDev;
-    string _KPPDev;
-    string _addressDev;
-    string _CommitteeFullNameDev;
+    public string? _designationDev;
+    public string? _OGRNDev;
+    public string? _TINDev;
+    public string? _KPPDev;
+    public string? _addressDev;
+    public string? _CommitteeFullNameDev;
 
-    public string _designationPrj;
-    public string _OGRNPrj;
-    public string _TINPrj;
-    public string _KPPPrj;
-    public string _addressPrj;
-    public string _directorFullNamePrj;
-    public string _engineerFullNamePrj;
+    public string? _designationPrj;
+    public string? _OGRNPrj;
+    public string? _TINPrj;
+    public string? _KPPPrj;
+    public string? _addressPrj;
+    public string? _directorFullNamePrj;
+    public string? _engineerFullNamePrj;
 
     public static bool UserExistsCheck(string? login)
     {
@@ -398,15 +398,24 @@
                     {
                         case("Developer"): 
                             {
-                                MongoDb.AddUserToDataBase(_user);
-                                Developer developer = new Developer(_user, 
-                                                                    _designationDev, 
-                                                                    _OGRNDev, 
-                                                                    _TINDev, 
-                                                                    _KPPDev, 
-                                                                    _addressDev, 
-                                                                    _CommitteeFullNameDev);
-                                MongoDb.AddDeveloperToDataBase(developer);
+                                if (_OGRNDev.Length == 13 && _TINDev.Length == 12 && _KPPDev.Length == 9)
+                                {
+                                    MongoDb.AddUserToDataBase(_user);
+                                    Developer developer = new Developer(_user,
+                                                                        _designationDev,
+                                                                        _OGRNDev,
+                                                                        _TINDev,
+                                                                        _KPPDev,
+                                                                        _addressDev,
+                                                                        _CommitteeFullNameDev);
+                                    MongoDb.AddDeveloperToDataBase(developer);
+                                }
+
+                                else
+                                {
+                                    await JS.InvokeVoidAsync("alert", "Заполните данные корректно!");
+                                    return;
+                                }
                             }
                             break;
 
@@ -427,14 +436,23 @@
 
                         case ("Projector"):
                             {
-                                MongoDb.AddUserToDataBase(_user);
-                                Projector projector = new Projector(_user,
-                                                                    _designationPrj,
-                                                                    _OGRNPrj,_TINPrj,
-                                                                    _KPPPrj,_addressPrj,
-                                                                    _directorFullNamePrj,
-                                                                    _engineerFullNamePrj);
-                                MongoDb.AddProjectorToDataBase(projector);
+                                if (_OGRNPrj.Length == 13 && _TINPrj.Length == 12 && _KPPPrj.Length == 9)
+                                {
+                                    MongoDb.AddUserToDataBase(_user);
+                                    Projector projector = new Projector(_user,
+                                                                        _designationPrj,
+                                                                        _OGRNPrj, _TINPrj,
+                                                                        _KPPPrj, _addressPrj,
+                                                                        _directorFullNamePrj,
+                                                                        _engineerFullNamePrj);
+                                    MongoDb.AddProjectorToDataBase(projector);
+                                }
+
+                                else
+                                {
+                                    await JS.InvokeVoidAsync("alert", "Заполните данные корректно!");
+                                    return;
+                                }
                             }
                             break;
                     }

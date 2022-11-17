@@ -91,20 +91,15 @@
                         </div>
                         <span asp-validation-for="Input.Login" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
                         <div class="row">
                             <div class="col-4">
-                                <label>Тип</label>
+                                <label>Область</label>
                             </div>
                             <div class="col-8">
-                                    <select @bind="MongoDb.currentCustomer.Type" id="types" class="form-control">
-                                    <option selected> </option>
-                                    <option>Газификация</option>
-                                    <option>Водоснабжение</option>
-                                </select>
+                                <input @bind-value="MongoDb.currentCustomer.Type" asp-for="Input.Login" class="form-control" readonly />
                             </div>
+                            <span asp-validation-for="Input.Login" class="text-danger"></span>
                         </div>
-                    </div>
 
                     <div class="form-group">
                         <div class="row">
@@ -142,7 +137,7 @@
                             <label>ОГРН</label>
                         </div>
                         <div class="col-8">
-                            <input @bind-value="MongoDb.currentDeveloper.OGRN" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input @bind-value="@MongoDb.currentDeveloper.OGRN" style="@(MongoDb.currentDeveloper.OGRN?.Length == 13? "border-color:" : "border-color:red")" asp-for="Input.Login" class="form-control" id="loginText" />
                         </div>
                         <span asp-validation-for="Input.Login" class="text-danger"></span>
                     </div>
@@ -152,7 +147,7 @@
                             <label>ИНН</label>
                         </div>
                         <div class="col-8">
-                                <input @bind-value="MongoDb.currentDeveloper.TIN" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input @bind-value="MongoDb.currentDeveloper.TIN" style="@(MongoDb.currentDeveloper.TIN?.Length == 12? "border-color:" : "border-color:red")" asp-for="Input.Login" class="form-control" id="loginText" />
                         </div>
                         <span asp-validation-for="Input.Login" class="text-danger"></span>
                     </div>
@@ -162,7 +157,7 @@
                             <label>КПП</label>
                         </div>
                         <div class="col-8">
-                                <input @bind-value="MongoDb.currentDeveloper.KPP" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input @bind-value="MongoDb.currentDeveloper.KPP" style="@(MongoDb.currentDeveloper.KPP?.Length == 9? "border-color:" : "border-color:red")" asp-for="Input.Login" class="form-control" id="loginText" />
                         </div>
                         <span asp-validation-for="Input.Login" class="text-danger"></span>
                     </div>
@@ -243,7 +238,7 @@
                             <label>ОГРН</label>
                         </div>
                         <div class="col-8">
-                                <input @bind-value="MongoDb.currentProjector.OGRN" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input @bind-value="MongoDb.currentProjector.OGRN" style="@(MongoDb.currentProjector.OGRN?.Length == 13? "border-color:" : "border-color:red")" asp-for="Input.Login" class="form-control" id="loginText" />
                         </div>
                         <span asp-validation-for="Input.Login" class="text-danger"></span>
                     </div>
@@ -253,7 +248,7 @@
                             <label>ИНН</label>
                         </div>
                         <div class="col-8">
-                                <input @bind-value="MongoDb.currentProjector.TIN" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input @bind-value="MongoDb.currentProjector.TIN" style="@(MongoDb.currentProjector.TIN?.Length == 12? "border-color:" : "border-color:red")" asp-for="Input.Login" class="form-control" id="loginText" />
                         </div>
                         <span asp-validation-for="Input.Login" class="text-danger"></span>
                     </div>
@@ -263,7 +258,7 @@
                             <label>КПП</label>
                         </div>
                         <div class="col-8">
-                                <input @bind-value="MongoDb.currentProjector.KPP" asp-for="Input.Login" class="form-control" id="loginText" />
+                                <input @bind-value="MongoDb.currentProjector.KPP" style="@(MongoDb.currentProjector.KPP?.Length == 9? "border-color:" : "border-color:red")" asp-for="Input.Login" class="form-control" id="loginText" />
                         </div>
                         <span asp-validation-for="Input.Login" class="text-danger"></span>
                     </div>
@@ -335,67 +330,46 @@
 }
 
 @code{
-    string _nameCust;
-    string _surnameCust;
-    string _patronymicCust;
-    string _departmentCust;
-    string _postCust;
-    string _NSPDirectorCust;
-    string _typeCust;
-
-    string _designationDev;
-    string _OGRNDev; 
-    string _TINDev; 
-    string _KPPDev; 
-    string _addressDev;
-    string _CommitteeFullNameDev;
-
-    public string _designationPrj;
-    public string _OGRNPrj; 
-    public string _TINPrj; 
-    public string _KPPPrj; 
-    public string _addressPrj;
-    public string _directorFullNamePrj;
-    public string _engineerFullNamePrj;
-
     public async Task SaveChangesCustomer()
     {
-        var client = new MongoClient("mongodb://localhost");
-        var database = client.GetDatabase("BuildingCompany");
-        var collection = database.GetCollection<User>("UserCollection");
-        if (MongoDb.currentUser != null)
-        {
-            //var user = collection.Find(x => x.Login == MongoDb.currentUser.Login).FirstOrDefault;
+        MongoDb.UpdateCustomer(MongoDb.currentCustomer);
 
-            await JS.InvokeVoidAsync("alert", "Данные обновлены!");
-            return;
-        }
+        await JS.InvokeVoidAsync("alert", "Данные обновлены!");
+        return;
+
     }
 
     public async Task SaveChangesDeveloper()
     {
-        var client = new MongoClient("mongodb://localhost");
-        var database = client.GetDatabase("BuildingCompany");
-        var collection = database.GetCollection<User>("BuildingCompanyCollection");
-        if (US.currentUser != null)
+        if (MongoDb.currentDeveloper.OGRN.Length == 13 && MongoDb.currentDeveloper.TIN.Length == 12 && MongoDb.currentDeveloper.KPP.Length == 9)
         {
-            var user = collection.Find(x => x.Login == US.currentUser.Login).FirstOrDefault();
+            MongoDb.UpdateDeveloper(MongoDb.currentDeveloper);
 
             await JS.InvokeVoidAsync("alert", "Данные обновлены!");
             return;
         }
+
+        else 
+        {
+            await JS.InvokeVoidAsync("alert", "Заполните данные корректно!");
+            return;
+        }
+
     }
 
     public async Task SaveChangesProjector()
     {
-        var client = new MongoClient("mongodb://localhost");
-        var database = client.GetDatabase("BuildingCompany");
-        var collection = database.GetCollection<User>("BuildingCompanyCollection");
-        if (US.currentUser != null)
+        if (MongoDb.currentProjector.OGRN.Length == 13 && MongoDb.currentProjector.TIN.Length == 12 && MongoDb.currentProjector.KPP.Length == 9)
         {
-            var user = collection.Find(x => x.Login == US.currentUser.Login).FirstOrDefault();
+            MongoDb.UpdateProjector(MongoDb.currentProjector);
 
             await JS.InvokeVoidAsync("alert", "Данные обновлены!");
+            return;
+        }
+
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Заполните данные корректно!");
             return;
         }
     }

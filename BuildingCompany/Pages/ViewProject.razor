@@ -13,28 +13,392 @@
 <PageTitle>Project</PageTitle>
 
 @{
-    @if (MongoDb.currentUser?.Login == MongoDb.currentCustomer?.Login)
+    @if (MongoDb.currentProject != null)
     {
-        <div>
-            <form>
-                <p>
+        @if (MongoDb.currentUser?.Login == MongoDb.currentCustomer?.Login)
+        {
+            @if(MongoDb.currentProject.owner.Name == MongoDb.currentCustomer.Name)
+            {
+            
+            <div>
+                <form @onsubmit="@SaveProject">
+                    <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Название</label>
+                                </div>
+                                <div class="col-8">
+                                    <input @bind-value="MongoDb.currentProject.Name" asp-for="Input.Login" class="form-control" readonly />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </p>
+                    <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Тип</label>
+                                </div>
+                                <div class="col-8">
+                                    <input @bind-value="MongoDb.currentProject.type" asp-for="Input.Login" class="form-control" readonly />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </p>
+                    <h3>Документы застройщика:</h3>
+                    @foreach (var document in MongoDb.currentProject.DocumentsForDeveloper)
+                    {
+                        <form class="form-inline" role="form">
+                            <p>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label>@document.Name</label>
+                                        </div>
+                                        <div class="col-8">
+                                            @if (document.IsRequired == true)
+                                            {
+                                                <a><input @bind-value="document.IsRequired" type="checkbox" checked /> Обязательный</a>
+                                            }
+
+                                            @if (document.IsRequired == false)
+                                            {
+                                                <a><input @bind-value="document.IsRequired" type="checkbox" /> Обязательный</a>
+                                            }
+                                            @if (document.FileName != null)
+                                            {
+                                                <button class="btn btn-default" type="submit">Download</button>
+                                            }
+                                        </div>
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </p>
+                        </form>
+                    }
+
+                    <h3>Документы проектировщика:</h3>
+                    @foreach (var document in MongoDb.currentProject.DocumentsForProjector)
+                    {
+                        <form class="form-inline" role="form">
+                            <p>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label>@document.Name</label>
+                                        </div>
+                                        <div class="col-8">
+                                            @if (document.IsRequired == true)
+                                            {
+                                                <a><input @bind-value="document.IsRequired" type="checkbox" checked /> Обязательный</a>
+                                            }
+
+                                            @if (document.IsRequired == false)
+                                            {
+                                                <a><input @bind-value="document.IsRequired" type="checkbox" /> Обязательный</a>
+                                            }
+                                            @if (document.FileName != null)
+                                            {
+                                                <button class="btn btn-default" @onclick="() => Download(document)">Download</button>
+                                            }
+
+                                        </div>
+                                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </p>
+                        </form>
+                    }
+                    <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-8">
+                                    @if (MongoDb.currentProject.Approved == true)
+                                    {
+                                        <a><input @bind-value="MongoDb.currentProject.Approved" type="checkbox" checked /> Утдвердить документацию</a>
+                                    }
+
+                                    @if (MongoDb.currentProject.Approved == false)
+                                    {
+                                        <a><input @bind-value="MongoDb.currentProject.Approved" type="checkbox" /> Утдвердить документацию</a>
+                                    }
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </p>
                     <div class="form-group">
                         <div class="row">
                             <div class="col-4">
-                                <label>Название</label>
                             </div>
                             <div class="col-8">
-                                <input @bind-value="MongoDb.currentProject.Name" asp-for="Input.Login" class="form-control" id="loginText" name="LoginInputText" readonly/>
+                                <button id="registerBtn" type="submit" class="btn btn-success form-control">Сохранить проект</button>
                             </div>
-                            <span asp-validation-for="Input.Login" class="text-danger"></span>
                         </div>
                     </div>
-                </p>
-            </form>
-        </div>
+                </form>
+            </div>
+            }
+
+            @if(MongoDb.currentProject.owner.Name != MongoDb.currentCustomer.Name)
+            {
+            
+            <div>
+                <form @onsubmit="@SaveProject">
+                    <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Название</label>
+                                </div>
+                                <div class="col-8">
+                                    <input @bind-value="MongoDb.currentProject.Name" asp-for="Input.Login" class="form-control" readonly />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </p>
+                    <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Тип</label>
+                                </div>
+                                <div class="col-8">
+                                    <input @bind-value="MongoDb.currentProject.type" asp-for="Input.Login" class="form-control" readonly />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </p>
+                    <h3>Документы застройщика:</h3>
+                    @foreach (var document in MongoDb.currentProject.DocumentsForDeveloper)
+                    {
+                        <form class="form-inline" role="form">
+                            <p>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label>@document.Name</label>
+                                        </div>
+                                        <div class="col-8">
+                                            @if (document.IsRequired == true)
+                                            {
+                                                    <a><input @bind-value="document.IsRequired" type="checkbox" checked disabled="disabled" /> Обязательный</a>
+                                            }
+
+                                            @if (document.IsRequired == false)
+                                            {
+                                                    <a><input @bind-value="document.IsRequired" type="checkbox" disabled="disabled" /> Обязательный</a>
+                                            }
+                                        </div>
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </p>
+                        </form>
+                    }
+
+                    <h3>Документы проектировщика:</h3>
+                    @foreach (var document in MongoDb.currentProject.DocumentsForProjector)
+                    {
+                        <form class="form-inline" role="form">
+                            <p>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label>@document.Name</label>
+                                        </div>
+                                        <div class="col-8">
+                                            @if (document.IsRequired == true)
+                                            {
+                                                    <a><input @bind-value="document.IsRequired" type="checkbox" checked disabled="disabled" /> Обязательный</a>
+                                            }
+
+                                            @if (document.IsRequired == false)
+                                            {
+                                                    <a><input @bind-value="document.IsRequired" type="checkbox" disabled="disabled" /> Обязательный</a>
+                                            }
+                                        </div>
+                                        <span asp-validation-for="Input.Login" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </p>
+                        </form>
+                    }
+                </form>
+            </div>
+            }
+        }
+
+
+        @if (MongoDb.currentUser?.Login == MongoDb.currentDeveloper?.Login)
+        {
+            <div>
+                <form @onsubmit="@SaveProject">
+                    <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Название</label>
+                                </div>
+                                <div class="col-8">
+                                    <input @bind-value="MongoDb.currentProject.Name" asp-for="Input.Login" class="form-control" readonly />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </p>
+                    <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Тип</label>
+                                </div>
+                                <div class="col-8">
+                                    <input @bind-value="MongoDb.currentProject.type" asp-for="Input.Login" class="form-control" readonly />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </p>
+                    <h3>Документы застройщика:</h3>
+                    @foreach (var document in MongoDb.currentProject.DocumentsForDeveloper)
+                    {
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <label>Document name:</label>
+                                <p class="form-control">@document</p>
+                            </div>
+                            <div class="checkbox">
+                                @if (document.IsRequired == true)
+                                {
+                                    <a><input @bind-value="document.IsRequired" type="checkbox" checked /> Обязательный</a>
+                                }
+
+                                @if (document.IsRequired == false)
+                                {
+                                    <a><input @bind-value="document.IsRequired" type="checkbox" /> Обязательный</a>
+                                }
+                            </div>
+                            <InputFile class="btn btn-default" OnChange="(e) => SingleUpload(e, document)">Upload</InputFile>
+                            @if (document.FileName != null)
+                            {
+                                <button class="btn btn-default" @onclick="() => Download(document)">Download</button>
+                            }
+                        </form>
+                    }
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                            </div>
+                            <div class="col-8">
+                                <button id="registerBtn" type="submit" class="btn btn-success form-control">Сохранить проект</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        }
+
+        @if (MongoDb.currentUser?.Login == MongoDb.currentProjector?.Login)
+        {
+            <div>
+                <form @onsubmit="@SaveProject">
+                    <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Название</label>
+                                </div>
+                                <div class="col-8">
+                                    <input @bind-value="MongoDb.currentProject.Name" asp-for="Input.Login" class="form-control" readonly />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </p>
+                    <p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>Тип</label>
+                                </div>
+                                <div class="col-8">
+                                    <input @bind-value="MongoDb.currentProject.type" asp-for="Input.Login" class="form-control" readonly />
+                                </div>
+                                <span asp-validation-for="Input.Login" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </p>
+                    <h3>Документы проектировщика:</h3>
+                    @foreach (var document in MongoDb.currentProject.DocumentsForProjector)
+                    {
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <label>Document name:</label>
+                                <p class="form-control">@document</p>
+                            </div>
+                            <div class="checkbox">
+                                @if (document.IsRequired == true)
+                                {
+                                    <a><input @bind-value="document.IsRequired" type="checkbox" checked /> Обязательный</a>
+                                }
+
+                                @if (document.IsRequired == false)
+                                {
+                                    <a><input @bind-value="document.IsRequired" type="checkbox" /> Обязательный</a>
+                                }
+                            </div>
+                        </form>
+                        <InputFile class="btn btn-default" OnChange="(e) => SingleUpload(e, document)">Upload</InputFile>
+                        @if (document.FileName != null)
+                        {
+                            <button class="btn btn-default" @onclick="() => Download(document)">Download</button>
+                        }
+
+                    }
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                            </div>
+                            <div class="col-8">
+                                <button id="registerBtn" type="submit" class="btn btn-success form-control">Сохранить проект</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        }
+
     }
 }
 
-@code{
-   
+@code {
+    public async Task SaveProject()
+    {
+        MongoDb.UpdateProject(MongoDb.currentProject);
+
+        await JS.InvokeVoidAsync("alert", "Проект был обновлен!");
+        return;
+    }
+
+    public async Task Download(Document document)
+    {
+        MongoDb.DownloadFile(document);
+
+        await JS.InvokeVoidAsync("alert", "Файл был загружен");
+        return;
+    }
+
+    private async Task SingleUpload(InputFileChangeEventArgs e, Document document)
+    {
+        Stream stream = e.File.OpenReadStream(2000000);
+        await MongoDb.UploadFileToDb(e.File, document, stream);
+        stream.Dispose();
+    }
+
 }

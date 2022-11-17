@@ -13,111 +13,244 @@
 <PageTitle>Projects</PageTitle>
 
 @{
-    @if (MongoDb.currentCustomer?.Type == "Газификация")
+    @if (MongoDb.currentUser != null)
     {
-        <form @onsubmit="@ProjectOnClick">
-        @foreach(Project project in MongoDb.GetProjects())
+        @if (MongoDb.currentCustomer?.Type == "Газификация")
         {
-            if (project.type == "Газификация")
-            {
+            <h1>Список доступных проектов:</h1>
+            <form @onsubmit="@ProjectOnClick">
+                @foreach (Project project in MongoDb.GetProjects())
+                {
+                    if (project.type == "Газификация")
+                    {
+                        <p>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label>Название</label>
+                                    </div>
+                                    <div class="col-8">  
+                                        <input @bind-value="@(project.Name)" asp-for="Input.Login" id="loginText" readonly/>
+                                    </div>
+                                </div>
+                            </div>
+                        </p>
+                    }
+                }
+                <p>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-8">
-                            <p>
-                                <a class="form-control"> Название: @(project.Name) Тип:@(project.type)</a>
-                            </p>
+                            <div class="col-4">
+                                <label>Выбрать проект</label>
                             </div>
+                            <div class="col-8">
+                                <select @bind="_name">
+                                    <option selected></option>
+                                    @foreach (Project project in MongoDb.GetProjects())
+                                    {
+                                        @if (project.type != null)
+                                        {
+                                            <option>@(project.Name)</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
                         </div>
                     </div>
-            }
-        }
-            <p>
+                </p>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-4">
-                            <label>Выбрать проект</label>
                         </div>
                         <div class="col-8">
-                            <select @bind="_name">
-                                @foreach (var project in MongoDb.GetProjects())
-                                {
-                                    <option>@(project.Name)</option>
-                                }
-                            </select>
+                            <button type="submit" class="btn btn-success form-control">Выбрать проект</button>
                         </div>
-
                     </div>
                 </div>
-            </p>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-4">
-                    </div>
-                    <div class="col-8">
-                        <button type="submit" class="btn btn-success form-control">Выбрать проект</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    }
+            </form>
+        }
 
-    @if (MongoDb.currentCustomer?.Type == "Водоснабжение")
-    {
-        <form @onsubmit="@ProjectOnClick">
-        @foreach (Project project in MongoDb.GetProjects())
+        @if (MongoDb.currentCustomer?.Type == "Водоснабжение")
         {
-            if (project.type == "Водоснабжение")
-            {
-                
+            <h1>Список доступных проектов:</h1>
+            <form @onsubmit="@ProjectOnClick">
+                @foreach (Project project in MongoDb.GetProjects())
+                {
+                    if (project.type == "Водоснабжение")
+                    {
+                        <p>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label>Название</label>
+                                    </div>
+                                    <div class="col-8">  
+                                        <input @bind-value="@(project.Name)" asp-for="Input.Login" id="loginText" readonly/>
+                                    </div>
+                                </div>
+                            </div>
+                        </p>
+                    }
+                }
+                <p>
                     <div class="form-group">
                         <div class="row">
+                            <div class="col-4">
+                                <label>Выбрать проект</label>
+                            </div>
                             <div class="col-8">
-                                <p>
-                                    <a class="form-control"> Название: @(project.Name) Тип:@(project.type)</a>
-                                </p>
+                                <select @bind="_name">
+                                    <option selected></option>
+                                    @foreach (var project in MongoDb.GetProjects())
+                                    {
+                                        @if (project.type == "Водоснабжение")
+                                        {
+                                            <option>@(project.Name)</option>
+                                        }
+                                    }
+                                </select>
                             </div>
                         </div>
                     </div>
-            }
-        }
-            <p>
+                </p>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-4">
-                            <label>Выбрать проект</label>
                         </div>
                         <div class="col-8">
-                            <select @bind="_name">
-                            <option selected></option>
-                                @foreach (var project in MongoDb.GetProjects())
-                                {
-                                    <option>@(project.Name)</option>
-                                }
-                            </select>
+                            <button type="submit" class="btn btn-success form-control">Выбрать проект</button>
                         </div>
                     </div>
                 </div>
-            </p>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-4">
+            </form>
+        }
+
+        @if (MongoDb.currentDeveloper != null && MongoDb.currentUser?.Login == MongoDb.currentDeveloper?.Login)
+        {
+            <h1>Доступные вам проекты:</h1>
+            <form @onsubmit="@ProjectOnClick">
+                @foreach (Project project in MongoDb.GetProjects())
+                {
+                    if (project.developer.Designation == MongoDb.currentDeveloper.Designation)
+                    {
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-8">
+                                    <p>
+                                        <a class="form-control"> Название: @(project.Name) Тип:@(project.type)</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                <p>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Выбрать проект</label>
+                            </div>
+                            <div class="col-8">
+                                <select @bind="_name">
+                                    <option selected></option>
+                                    @foreach (var project in MongoDb.GetProjects())
+                                    {
+                                        @if (project.developer.Designation == MongoDb.currentDeveloper.Designation)
+                                        {
+                                            <option>@(project.Name)</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-8">
-                        <button type="submit" class="btn btn-success form-control">Выбрать проект</button>
+                </p>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                        </div>
+                        <div class="col-8">
+                            <button type="submit" class="btn btn-success form-control">Выбрать проект</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        }
+
+        @if (MongoDb.currentProjector != null && MongoDb.currentUser.Login == MongoDb.currentProjector.Login)
+        {
+            <h1>Доступные вам проекты:</h1>
+            <form @onsubmit="@ProjectOnClick">
+                @foreach (Project project in MongoDb.GetProjects())
+                {
+                    if (project.projector.Designation == MongoDb.currentProjector.Designation)
+                    {
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-8">
+                                    <p>
+                                        <a class="form-control"> Название: @(project.Name) Тип:@(project.type)</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                <p>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label>Выбрать проект</label>
+                            </div>
+                            <div class="col-8">
+                                <select @bind="_name">
+                                    <option selected></option>
+                                    @foreach (var project in MongoDb.GetProjects())
+                                    {
+                                        @if (project.projector.Designation == MongoDb.currentProjector.Designation)
+                                        {
+                                            <option>@(project.Name)</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </p>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                        </div>
+                        <div class="col-8">
+                            <button type="submit" class="btn btn-success form-control">Выбрать проект</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        }
     }
 }
 
-@code{
-    string? _name;
+@code {
+    string _name;
 
-    public void ProjectOnClick()
+    public async Task ProjectOnClick()
     {
-        MongoDb.currentProject = MongoDb.SearchProject(_name);
-        NavigationManager.NavigateTo("/ProjectView");
+        if (_name != null)
+        {
 
+            MongoDb.currentProject = MongoDb.SearchProject(_name);
+            NavigationManager.NavigateTo("/ProjectView");
+        }
+
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Выберите проект!");
+            return;
+        }
     }
+   
 }
